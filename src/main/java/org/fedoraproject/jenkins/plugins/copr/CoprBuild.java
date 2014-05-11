@@ -31,55 +31,55 @@ import com.google.gson.Gson;
 //temporary solution only
 //will be replaced with proper copr-client library
 class CoprBuild {
-	private long id;
-	private CoprClient copr;
-	private String username;
+    private long id;
+    private CoprClient copr;
+    private String username;
 
-	public CoprBuild(long id) {
-		this.id = id;
-	}
+    public CoprBuild(long id) {
+        this.id = id;
+    }
 
-	public CoprBuildStatus getStatut() throws CoprException {
-		String url = "/api/coprs/build_status/%d/";
+    public CoprBuildStatus getStatut() throws CoprException {
+        String url = "/api/coprs/build_status/%d/";
 
-		String json = copr.doGet(username, String.format(url, id));
+        String json = copr.doGet(username, String.format(url, id));
 
-		CoprResponse resp = new Gson().fromJson(json, CoprResponse.class);
+        CoprResponse resp = new Gson().fromJson(json, CoprResponse.class);
 
-		if (!resp.outputIsOk()) {
-			throw new CoprException(resp.getError());
-		}
+        if (!resp.outputIsOk()) {
+            throw new CoprException(resp.getError());
+        }
 
-		if (resp.getStatus().equals("pending")) {
-			return CoprBuildStatus.PENDING;
-		} else if (resp.getStatus().equals("running")) {
-			return CoprBuildStatus.RUNNING;
-		} else if (resp.getStatus().equals("failed")) {
-			return CoprBuildStatus.FAILED;
-		} else if (resp.getStatus().equals("succeeded")) {
-			return CoprBuildStatus.SUCCEEDED;
-		} else if (resp.getStatus().equals("canceled")) {
-			return CoprBuildStatus.CANCELED;
-		}
+        if (resp.getStatus().equals("pending")) {
+            return CoprBuildStatus.PENDING;
+        } else if (resp.getStatus().equals("running")) {
+            return CoprBuildStatus.RUNNING;
+        } else if (resp.getStatus().equals("failed")) {
+            return CoprBuildStatus.FAILED;
+        } else if (resp.getStatus().equals("succeeded")) {
+            return CoprBuildStatus.SUCCEEDED;
+        } else if (resp.getStatus().equals("canceled")) {
+            return CoprBuildStatus.CANCELED;
+        }
 
-		throw new CoprException("Unknown build status");
-	}
+        throw new CoprException("Unknown build status");
+    }
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	void setCoprClient(CoprClient copr) {
-		if (this.copr == null) {
-			this.copr = copr;
-		}
-	}
+    void setCoprClient(CoprClient copr) {
+        if (this.copr == null) {
+            this.copr = copr;
+        }
+    }
 
-	void setUsername(String username) {
-		this.username = username;
-	}
+    void setUsername(String username) {
+        this.username = username;
+    }
 
-	public static enum CoprBuildStatus {
-		PENDING, RUNNING, FAILED, SUCCEEDED, CANCELED
-	}
+    public static enum CoprBuildStatus {
+        PENDING, RUNNING, FAILED, SUCCEEDED, CANCELED
+    }
 }

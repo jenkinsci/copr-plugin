@@ -50,97 +50,95 @@ import com.google.gson.Gson;
 // will be replaced with proper copr-client library
 class CoprClient {
 
-	private URL apiurl;
-	private String apilogin;
-	private String apitoken;
+    private URL apiurl;
+    private String apilogin;
+    private String apitoken;
 
-	public CoprClient(String apiurl, String apilogin, String apitoken)
-			throws MalformedURLException {
-		this.apiurl = new URL(apiurl);
-		this.apilogin = apilogin;
-		this.apitoken = apitoken;
-	}
+    public CoprClient(String apiurl, String apilogin, String apitoken)
+            throws MalformedURLException {
+        this.apiurl = new URL(apiurl);
+        this.apilogin = apilogin;
+        this.apitoken = apitoken;
+    }
 
-	public CoprBuild scheduleBuild(String srpmurl, String username,
-			String coprname, String buildurl)
-			throws IOException, CoprException {
+    public CoprBuild scheduleBuild(String srpmurl, String username,
+            String coprname, String buildurl)
+            throws IOException, CoprException {
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("pkgs", srpmurl));
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("pkgs", srpmurl));
 
-		String json = doPost(username, coprname, params, buildurl);
+        String json = doPost(username, coprname, params, buildurl);
 
-		CoprResponse resp = new Gson().fromJson(json, CoprResponse.class);
+        CoprResponse resp = new Gson().fromJson(json, CoprResponse.class);
 
-		CoprBuild coprBuild;
-		if (resp.outputIsOk()) {
-			coprBuild = new CoprBuild(resp.getIds()[0]);
-			coprBuild.setCoprClient(this);
-			coprBuild.setUsername(username);
-		} else {
-			throw new CoprException(resp.getError());
-		}
+        CoprBuild coprBuild;
+        if (resp.outputIsOk()) {
+            coprBuild = new CoprBuild(resp.getIds()[0]);
+            coprBuild.setCoprClient(this);
+            coprBuild.setUsername(username);
+        } else {
+            throw new CoprException(resp.getError());
+        }
 
-		return coprBuild;
-	}
+        return coprBuild;
+    }
 
-	String doGet(String username, String url) throws CoprException {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+    String doGet(String username, String url) throws CoprException {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
 
-		HttpGet httpget = new HttpGet(this.apiurl + url);
+        HttpGet httpget = new HttpGet(this.apiurl + url);
 
-		try {
-			httpget.setHeader("Authorization", "Basic "
-							+ Base64.encodeBase64String(String.format("%s:%s",
-									apilogin, apitoken).getBytes("UTF-8")));
-		} catch (UnsupportedEncodingException e) {
-			// here goes trouble
-			throw new AssertionError(e);
-		}
+        try {
+            httpget.setHeader("Authorization", "Basic "
+                    + Base64.encodeBase64String(String.format("%s:%s",
+                            apilogin, apitoken).getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            // here goes trouble
+            throw new AssertionError(e);
+        }
 
-		String result;
-		try {
-			CloseableHttpResponse response = httpclient.execute(httpget);
-			result = EntityUtils.toString(response.getEntity());
-			response.close();
-			httpclient.close();
-		} catch (IOException e) {
-			throw new CoprException("Error while processing HTTP request", e);
-		}
+        String result;
+        try {
+            CloseableHttpResponse response = httpclient.execute(httpget);
+            result = EntityUtils.toString(response.getEntity());
+            response.close();
+            httpclient.close();
+        } catch (IOException e) {
+            throw new CoprException("Error while processing HTTP request", e);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	private String doPost(String username, String coprname,
-			List<NameValuePair> params, String url) throws IOException {
+    private String doPost(String username, String coprname,
+            List<NameValuePair> params, String url) throws IOException {
 
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httppost = new HttpPost(new URL(apiurl, url).toString());
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpPost httppost = new HttpPost(new URL(apiurl, url).toString());
 
-		try {
-			httppost.setHeader(
-					"Authorization",
-					"Basic "
-							+ Base64.encodeBase64String(String.format("%s:%s",
-									this.apilogin, this.apitoken).getBytes(
-									"UTF-8")));
-		} catch (UnsupportedEncodingException e) {
-			// here goes trouble
-			throw new AssertionError(e);
-		}
+        try {
+            httppost.setHeader("Authorization", "Basic "
+                            + Base64.encodeBase64String(String.format("%s:%s",
+                                    this.apilogin, this.apitoken).getBytes(
+                                    "UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            // here goes trouble
+            throw new AssertionError(e);
+        }
 
-		if (params != null) {
-			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params,
-					Consts.UTF_8);
-			httppost.setEntity(entity);
-		}
+        if (params != null) {
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params,
+                    Consts.UTF_8);
+            httppost.setEntity(entity);
+        }
 
-		String result;
-		CloseableHttpResponse response = httpclient.execute(httppost);
-		result = EntityUtils.toString(response.getEntity());
-		response.close();
-		httpclient.close();
+        String result;
+        CloseableHttpResponse response = httpclient.execute(httppost);
+        result = EntityUtils.toString(response.getEntity());
+        response.close();
+        httpclient.close();
 
-		return result;
-	}
+        return result;
+    }
 }
