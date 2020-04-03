@@ -39,6 +39,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.BatchFile;
 import hudson.tasks.Shell;
 import hudson.util.FormValidation;
+import hudson.util.Secret;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -70,8 +71,8 @@ public class CoprPlugin extends Notifier {
     private final String coprname;
     private final String username;
     private final String srpm;
-    private final String apilogin;
-    private final String apitoken;
+    private final Secret apilogin;
+    private final Secret apitoken;
     private final String apiurl;
     private final String srpmscript;
     private final boolean prepareSrpm;
@@ -80,7 +81,7 @@ public class CoprPlugin extends Notifier {
 
     @DataBoundConstructor
     public CoprPlugin(String coprname, String username, String srpm,
-            String apilogin, String apitoken, String apiurl, String srpmscript,
+            Secret apilogin, Secret apitoken, String apiurl, String srpmscript,
             boolean prepareSrpm, String coprTimeout, boolean waitForCoprBuild) {
         this.coprname = coprname;
         this.username = username;
@@ -126,7 +127,7 @@ public class CoprPlugin extends Notifier {
         String srpmstr = env.expand(srpm);
         URL srpmurl = getSrpmUrl(srpmstr, build, listener);
 
-        CoprClient copr = new CoprClient(apiurl, apilogin, apitoken);
+        CoprClient copr = new CoprClient(apiurl, apilogin.getPlainText(), apitoken.getPlainText());
         CoprBuild coprBuild;
 
         String buildurl = apiurl
@@ -247,11 +248,11 @@ public class CoprPlugin extends Notifier {
         return srpm;
     }
 
-    public String getApilogin() {
+    public Secret getApilogin() {
         return apilogin;
     }
 
-    public String getApitoken() {
+    public Secret getApitoken() {
         return apitoken;
     }
 
