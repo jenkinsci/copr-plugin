@@ -12,7 +12,7 @@
 
 	<groupId>org.fedoraproject.jenkins.plugins</groupId>
 	<artifactId>copr</artifactId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.6.0</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Copr plugin</name>
 	<description>Plugin for building RPM packages in Copr</description>
@@ -58,7 +58,7 @@
 		<connection>scm:git:ssh://github.com/jenkinsci/copr-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/copr-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/copr-plugin</url>
-		<tag>HEAD</tag>
+		<tag>copr-0.6.0</tag>
 	</scm>
 
 	<distributionManagement>
