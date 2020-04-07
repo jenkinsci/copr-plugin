@@ -50,6 +50,7 @@ public class CoprResponse {
         return id;
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="EI_EXPOSE_REP")
     public long[] getIds() {
         return ids;
     }
